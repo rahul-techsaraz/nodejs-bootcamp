@@ -17,6 +17,9 @@ NOSQL-> COLLECTION(SCHEMA LESS)
  */
 const fs = require('fs');
 const http = require('http');
+const url = require('url');
+
+const replcaeTemplate = require('./module/replaceTemplate');
 
 //Reading the File BLOCKING WAY
 //const readText = fs.readFileSync('./txt/input.txt', 'utf-8');
@@ -46,20 +49,46 @@ const http = require('http');
 // })
 
 //HTTP MODULE
-const data = fs.readFileSync(`${__dirname}/txt/data/data.json`, 'utf-8');
+
+//Replace Templete Function
+
+const overviewTemplate = fs.readFileSync(`${__dirname}/templates/template-product-overview.html`, 'utf-8');
+const cardTemplate = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'utf-8');
+const productDetailsTemplete = fs.readFileSync(`${__dirname}/templates/template-product-details.html`, 'utf-8');
+
+
+
+const data = fs.readFileSync(`${__dirname}/data/data.json`, 'utf-8');
+const productData = JSON.parse(data);
+
 const server = http.createServer((req, res) => {
     const pathName = req.url;
-    if (pathName === '/' || pathName === '/overview') {
-        res.end('You are on the home page')
-    } else if (pathName === '/product') {
-        res.end('You are on the product page')
-        
-    } else if (pathName === '/api') {
-        res.writeHead(200)
-        res.end(data);
+    const { query, pathname } = url.parse(req.url, true);
+    console.log(query);
+    console.log(pathname);
 
+    
+    // OVERVIEW/HOME
+    if (pathname === '/' || pathname === '/overview') {
+        const cardHtml = productData.map(el => replcaeTemplate(cardTemplate, el)).join("");
+        const result = overviewTemplate.replace(/{%PRODUCT_CARDS%}/g,cardHtml)
+        res.writeHead(200,{'Content-Type':'text/html'})
+        res.end(result)
+    }
+    //PRODUCT
+    else if (pathname === '/product') {
+        const product = productData[query.id];
+        const result = replcaeTemplate(productDetailsTemplete, product);
+        res.writeHead(200,{'Contetnt-Type':"text/html"})
+         res.end(result)
         
     }
+        //PRODUCT
+    else if (pathname === '/api') {
+        res.writeHead(200)
+        res.end(data);    
+    }
+    //NOT FOUND
     else {
         res.writeHead(404, {
             'Content-Type': 'text/html',

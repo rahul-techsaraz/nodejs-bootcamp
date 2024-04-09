@@ -1,0 +1,19 @@
+{
+  "name": "nodejs-bootcamp",
+  "version": "1.0.0",
+  "description": "Learning Nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rahul-techsaraz/nodejs-bootcamp.git"
+  },
+  "author": "Rahul Singh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rahul-techsaraz/nodejs-bootcamp/issues"
+  },
+  "homepage": "https://github.com/rahul-techsaraz/nodejs-bootcamp#readme"
+}
