@@ -77,7 +77,7 @@ const server = http.createServer((req, res) => {
     }
     //PRODUCT
     else if (pathname === '/product') {
-        const product = productData[query.id];
+        const product = productData[query.id-1];
         const result = replcaeTemplate(productDetailsTemplete, product);
         res.writeHead(200,{'Contetnt-Type':"text/html"})
          res.end(result)
