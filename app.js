@@ -1,10 +1,24 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 //Middleware
 app.use(express.json());
-//Middleware is normal javascript function thats heps to modify incoming request
+app.use(morgan('dev')); // Third Party MiddleWare
+app.use((req, res, next) => { // Custom Middleware
+    console.log('Handling our Middleware');
+    next();
+});
+// app.use((req, res, next) => {
+//     console.log('Handling our another Middleware');
+//     next();
+// });
+//Middleware is normal javascript function thats helps to modify incoming request
+/**
+ * Incopming Req -> Middleware Fn() -> next()
+ * 
+ */
 
 
 // app.get('/', (req, res) => {
@@ -97,23 +111,63 @@ const deleteTourById = (req, res) => {
         }
     })
 }
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/data/data.json`));
-// app.get('/api/v1/tours', getAllTours)
-// app.post('/api/v1/tours', createTour);
-//app.get('/api/v1/tours/:id/:messageId/:newId?', (req, res) => {
-// app.get('/api/v1/tours/:id', getTourById)
-// app.patch('/api/v1/tours/:id', updateTourById)
-// app.delete('/api/v1/tours/:id', deleteTourById)
 
-app.route('/api/v1/tours')
+//User Controller
+
+const getAllUsers = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message:"This route not yet created"
+    })
+}
+const createUser = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message:"This route not yet created"
+    })
+}
+const getUserById = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message:"This route not yet created"
+    })
+}
+const updateUserById = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message:"This route not yet created"
+    })
+}
+const deleteUserById = (req, res) => {
+    res.status(500).json({
+        status: "error",
+        message:"This route not yet created"
+    })
+}
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/data/data.json`));
+
+const toursRouter = express.Router();
+
+app.use('/api/v1/tours', toursRouter);
+
+toursRouter.route('/')
     .get(getAllTours)
     .post(createTour);
 
-app.route('/api/v1/tours/:id')
+toursRouter.route('/:id')
     .get(getTourById)
     .patch(updateTourById)
     .delete(deleteTourById)
 
+
+
+app.route('/api/v1/users')
+    .get(getAllUsers)
+  .post(createUser)
+app.route('/api/v1/user/:id')
+    .get(getUserById)
+    .patch(updateUserById)
+    .delete(deleteUserById)
 
 app.listen(3000, () => {
     console.log('App is running');
