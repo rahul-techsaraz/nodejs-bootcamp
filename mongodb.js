@@ -46,10 +46,13 @@
  *
  * UPDATE QUERY
  * db.COLLECTION_NAME.updateOne({pass the filter criteria},{$set:{New value in key value}})
- *
+ *  MONGOOSE: 
  *
  *
  *  
+MVC: MODEL(Business Logic)-VIEW(UI)->Controller(Application logic)
+GET REquest-> Controller ->Model(DATABASE LOGIC or BUSINESS LOGIC)
  *
+VIEW will get the data
  *
  */
