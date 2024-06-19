@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Password is required field'],
-        minlength: 5
+        minlength: 5,
+        select:false
     },
     confirmPassword: {
         type: String,
@@ -34,7 +35,8 @@ const userSchema = new mongoose.Schema({
             },
             message: "Password missmatch"
         }
-    }
+    },
+    passwordChangedAt:Date
 
 });
 
@@ -47,7 +49,20 @@ userSchema.pre('save', async function (next) {
     this.confirmPassword = undefined;
     next();
 })
+//Instance method
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+    
+    return await bcrypt.compare(candidatePassword, userPassword);
+    
+}
 
+userSchema.methods.changedPasswordAfter = function (JWTTimestamps) {
+    const convertIntoTimestamps = parseInt(this.passwordChangedAt.getTime()/ 1000, 10);
+    if (this.passwordChangedAt) {
+        return JWTTimestamps < convertIntoTimestamps; //
+    }
+    return false; 
+}
 
 //Model
 const User = mongoose.model('User', userSchema);
