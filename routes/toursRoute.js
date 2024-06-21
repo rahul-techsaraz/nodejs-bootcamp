@@ -1,7 +1,7 @@
 
 const express = require('express');
 const { getAllTours,createTour,getTourById,updateTourById,deleteTourById,aliseTopTours, getToursStats, getMonthlyStats } = require('../controller/toursController');
-const { protectRoutes } = require('../controller/authCOntroller');
+const { protectRoutes, restrictTo } = require('../controller/authCOntroller');
 const router = express.Router();
 
 //router.param('id', checkId)
@@ -19,7 +19,7 @@ router.route('/')
 router.route('/:id')
     .get(getTourById)
     .patch(updateTourById)
-    .delete(deleteTourById);
+    .delete(protectRoutes,restrictTo('admin','lead'),deleteTourById);
 
 
 

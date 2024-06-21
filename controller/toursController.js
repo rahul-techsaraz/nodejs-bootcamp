@@ -71,12 +71,12 @@ exports.updateTourById = catchAsync(async (req, res) => {
     
 })
 
-exports.deleteTourById =catchAsync(async (req, res) => {
+exports.deleteTourById =catchAsync(async (req, res,next) => {
     const tour = await Tour.findByIdAndDelete(req.params.id)
     if (!tour) {
             return next(new AppError('No record found for thid ID',404))
         }
-    res.status(204).json({
+    res.status(200).json({
         status: "success",
         message: "Record deleted"
     })

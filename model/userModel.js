@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -20,6 +21,11 @@ const userSchema = new mongoose.Schema({
         validate: [validator.isEmail, 'Please enter valid email']
     },
     photo: String,
+    role: {
+        type: String,
+        default: 'user',
+        enum:['user','admin','lead']
+    },
     password: {
         type: String,
         required: [true, 'Password is required field'],
@@ -36,7 +42,9 @@ const userSchema = new mongoose.Schema({
             message: "Password missmatch"
         }
     },
-    passwordChangedAt:Date
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires:Date
 
 });
 
@@ -49,6 +57,13 @@ userSchema.pre('save', async function (next) {
     this.confirmPassword = undefined;
     next();
 })
+
+userSchema.pre('save', function (next) {
+    if (!this.isModified('password') || this.isNew) return next();
+    this.passwordChangedAt = Date.now() - 1000;
+    next();
+     
+ })
 //Instance method
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     
@@ -57,11 +72,20 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
 }
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamps) {
-    const convertIntoTimestamps = parseInt(this.passwordChangedAt.getTime()/ 1000, 10);
     if (this.passwordChangedAt) {
+    const convertIntoTimestamps = parseInt(this.passwordChangedAt.getTime()/ 1000, 10);
         return JWTTimestamps < convertIntoTimestamps; //
     }
     return false; 
+}
+
+userSchema.methods.craetePasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    console.log({ resetToken }, this.passwordResetToken);
+    return resetToken;
 }
 
 //Model
